@@ -216,8 +216,6 @@ UIEdgeInsets scrollViewOriginalContentInsets;
             if ((NSUInteger)self.allowedScrollingDirection != (NSUInteger)SVInfiniteScrollingViewAllowedScrollingDirectionBoth && (NSUInteger)self.scrollingDirection != (NSUInteger)self.allowedScrollingDirection)
                 // Can't scroll in that direction
                 return;
-        } else {
-            self.scrollingDirection = SVInfiniteScrollingViewScrollingDirectionNone;
         }
         
         self.lastContentOffsetY = MIN(scrollOffsetThreshold, contentOffset.y);
@@ -279,7 +277,6 @@ UIEdgeInsets scrollViewOriginalContentInsets;
 
 - (void)stopAnimating {
     self.state = SVInfiniteScrollingStateStopped;
-//    self.lastContentOffsetY = CGFLOAT_MIN;
 }
 
 - (void)setState:(SVInfiniteScrollingState)newState {

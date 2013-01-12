@@ -30,7 +30,6 @@ typedef NS_ENUM(NSUInteger, SVInfiniteScrollingState) {
 };
 
 typedef NS_ENUM(NSUInteger, SVInfiniteScrollingViewScrollingDirection) {
-    SVInfiniteScrollingViewScrollingDirectionNone,
     SVInfiniteScrollingViewScrollingDirectionDown,
     SVInfiniteScrollingViewScrollingDirectionUp
 };
