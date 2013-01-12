@@ -22,20 +22,31 @@
 @end
 
 
-enum {
+typedef NS_ENUM(NSUInteger, SVInfiniteScrollingState) {
 	SVInfiniteScrollingStateStopped = 0,
     SVInfiniteScrollingStateTriggered,
     SVInfiniteScrollingStateLoading,
     SVInfiniteScrollingStateAll = 10
 };
 
-typedef NSUInteger SVInfiniteScrollingState;
+typedef NS_ENUM(NSUInteger, SVInfiniteScrollingViewScrollingDirection) {
+    SVInfiniteScrollingViewScrollingDirectionNone,
+    SVInfiniteScrollingViewScrollingDirectionDown,
+    SVInfiniteScrollingViewScrollingDirectionUp
+};
+
+typedef NS_ENUM(NSUInteger, SVInfiniteScrollingViewAllowedScrollingDirection) {
+    SVInfiniteScrollingViewAllowedScrollingDirectionDown = SVInfiniteScrollingViewScrollingDirectionDown,
+    SVInfiniteScrollingViewAllowedScrollingDirectionUp = SVInfiniteScrollingViewScrollingDirectionUp,
+    SVInfiniteScrollingViewAllowedScrollingDirectionBoth
+};
 
 @interface SVInfiniteScrollingView : UIView
 
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 @property (nonatomic, readonly) SVInfiniteScrollingState state;
 @property (nonatomic, readwrite) BOOL enabled;
+@property (nonatomic) SVInfiniteScrollingViewAllowedScrollingDirection allowedScrollingDirection;
 
 - (void)setCustomView:(UIView *)view forState:(SVInfiniteScrollingState)state;
 

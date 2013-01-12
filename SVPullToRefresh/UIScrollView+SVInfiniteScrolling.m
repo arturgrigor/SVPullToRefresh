@@ -23,6 +23,9 @@ static CGFloat const SVInfiniteScrollingViewHeight = 60;
 
 @interface SVInfiniteScrollingView ()
 
+@property (nonatomic) CGFloat lastContentOffsetY;
+@property (nonatomic) SVInfiniteScrollingViewScrollingDirection scrollingDirection;
+
 @property (nonatomic, copy) void (^infiniteScrollingHandler)(void);
 
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
@@ -123,6 +126,9 @@ UIEdgeInsets scrollViewOriginalContentInsets;
 @synthesize scrollView = _scrollView;
 @synthesize activityIndicatorView = _activityIndicatorView;
 
+@synthesize allowedScrollingDirection;
+@synthesize lastContentOffsetY;
+
 
 - (id)initWithFrame:(CGRect)frame {
     if(self = [super initWithFrame:frame]) {
@@ -132,6 +138,9 @@ UIEdgeInsets scrollViewOriginalContentInsets;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.state = SVInfiniteScrollingStateStopped;
         self.enabled = YES;
+        
+        self.allowedScrollingDirection = SVInfiniteScrollingViewAllowedScrollingDirectionBoth;
+        self.lastContentOffsetY = CGFLOAT_MIN;
         
         self.viewForState = [NSMutableArray arrayWithObjects:@"", @"", @"", @"", nil];
     }
@@ -196,6 +205,23 @@ UIEdgeInsets scrollViewOriginalContentInsets;
         CGFloat scrollViewContentHeight = self.scrollView.contentSize.height;
         CGFloat scrollOffsetThreshold = scrollViewContentHeight-self.scrollView.bounds.size.height;
         
+        if (self.lastContentOffsetY != CGFLOAT_MIN)
+        {
+            self.scrollingDirection = (
+                                       contentOffset.y >= self.lastContentOffsetY ?
+                                       SVInfiniteScrollingViewScrollingDirectionDown :
+                                       SVInfiniteScrollingViewScrollingDirectionUp
+                                       );
+            
+            if ((NSUInteger)self.allowedScrollingDirection != (NSUInteger)SVInfiniteScrollingViewAllowedScrollingDirectionBoth && (NSUInteger)self.scrollingDirection != (NSUInteger)self.allowedScrollingDirection)
+                // Can't scroll in that direction
+                return;
+        } else {
+            self.scrollingDirection = SVInfiniteScrollingViewScrollingDirectionNone;
+        }
+        
+        self.lastContentOffsetY = MIN(scrollOffsetThreshold, contentOffset.y);
+        
         if(!self.scrollView.isDragging && self.state == SVInfiniteScrollingStateTriggered && !self.scrollView.isDragging)
             self.state = SVInfiniteScrollingStateLoading;
         else if(contentOffset.y > scrollOffsetThreshold && self.state == SVInfiniteScrollingStateStopped && self.scrollView.isDecelerating)
@@ -253,6 +279,7 @@ UIEdgeInsets scrollViewOriginalContentInsets;
 
 - (void)stopAnimating {
     self.state = SVInfiniteScrollingStateStopped;
+//    self.lastContentOffsetY = CGFLOAT_MIN;
 }
 
 - (void)setState:(SVInfiniteScrollingState)newState {

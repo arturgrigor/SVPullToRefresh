@@ -28,6 +28,21 @@
     
     __weak SVViewController *weakSelf = self;
     
+    // setup infinite scrolling
+    [self.tableView addInfiniteScrollingWithActionHandler:^{
+
+        int64_t delayInSeconds = 2.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [weakSelf.tableView beginUpdates];
+            [weakSelf.dataSource addObject:[weakSelf.dataSource.lastObject dateByAddingTimeInterval:-90]];
+            [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.dataSource.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+            [weakSelf.tableView endUpdates];
+            
+            [weakSelf.tableView.infiniteScrollingView stopAnimating];
+        });
+    }];
+    
     // setup pull-to-refresh
     [self.tableView addPullToRefreshWithActionHandler:^{
         
@@ -43,20 +58,7 @@
         });
     }];
     
-    // setup infinite scrolling
-    [self.tableView addInfiniteScrollingWithActionHandler:^{
-
-        int64_t delayInSeconds = 2.0;
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            [weakSelf.tableView beginUpdates];
-            [weakSelf.dataSource addObject:[weakSelf.dataSource.lastObject dateByAddingTimeInterval:-90]];
-            [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.dataSource.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-            [weakSelf.tableView endUpdates];
-            
-            [weakSelf.tableView.infiniteScrollingView stopAnimating];
-        });
-    }];
+    [self.tableView.infiniteScrollingView setAllowedScrollingDirection:SVInfiniteScrollingViewAllowedScrollingDirectionDown];
     
     // trigger the refresh manually at the end of viewDidLoad
     [tableView triggerPullToRefresh];
